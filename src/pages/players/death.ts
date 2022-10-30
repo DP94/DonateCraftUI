@@ -1,4 +1,4 @@
-﻿export class DeathModel{
+﻿export class Death{
     id: string;
     reason: string;
     playerId: string;

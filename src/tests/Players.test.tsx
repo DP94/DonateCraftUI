@@ -1,5 +1,5 @@
 ﻿import { render } from "@testing-library/react";
-import Players from "../players/Players";
+import Players from "../pages/players/Players";
 
 describe("Players page", function (){
     it('renders', function(){

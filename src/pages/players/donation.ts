@@ -1,25 +1,27 @@
-﻿import {CharityModel} from "./CharityModel";
-import {PlayerModel} from "./PlayerModel";
+﻿import {Player} from "./player";
 
-export class DonationModel{
+export class Donation {
     
     id: string;
     amount: number;
     createdDate: Date;
-    charity: CharityModel;
+    charityId: number;
+    charityName: string;
     paidForId: string;
-    paidForBy: PlayerModel
+    paidForBy: Player
     
     constructor(id: string,
     amount: number,
     createdDate: Date,
-    charity: CharityModel,
+    charityId: number,
+    charityName: string,
     paidForId: string,
-    paidForBy: PlayerModel) {
+    paidForBy: Player) {
         this.id = id;
         this.amount = amount;
         this.createdDate = createdDate;
-        this.charity = charity;
+        this.charityId = charityId;
+        this.charityName = charityName;
         this.paidForId = paidForId;
         this.paidForBy = paidForBy;
     }
