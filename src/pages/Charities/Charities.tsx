@@ -6,35 +6,42 @@ import './Charity.css';
 class Charities extends React.Component<{}, {charities: Charity[]}> {
     
     charityService = new CharityService();
+    playerId = '';
     
     constructor(props: any) {
         super(props);
         this.state = {
             charities: []
         }
+        const p = new URLSearchParams(window.location.search);
+        this.playerId = p.get('playerId') ?? '';
     }
     
     async componentDidMount() {
         const charityIds: Charity[] = await this.charityService.getCharityIds();
         for (let i = 0; i < charityIds.length; i++) {
             const charityId = charityIds[i].id;
-            const charityDetails = await this.charityService.getCharityDetails(charityId);
-            this.setState( {
-                charities : [...this.state.charities, charityDetails]
-            });
+            try {
+                const charityDetails = await this.charityService.getCharityDetails(charityId);
+                this.setState( {
+                    charities : [...this.state.charities, charityDetails]
+                });
+            } catch(e) {
+                //Some charities can not be found
+                console.log(e);
+            }
         }
     }
     
     charityDonateClicked(charity: Charity) {
-        let url = `${process.env.REACT_APP_JG_DONATE_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~5ba92742-af9d-4ad6-a5a7-c768dd9bc747`;
-        window.open(url);
+        const url = `${process.env.REACT_APP_JG_DONATE_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${this.playerId}`;
+        window.location.replace(url);
     }
 
     render() {
         if (this.state && this.state.charities.length !== 0) {
             return (
                 <div>
-                    <h1>Charities</h1>
                     <table className="charity-table table-striped table table-hover table-responsive">
                         <thead className="table-light">
                             <tr>
