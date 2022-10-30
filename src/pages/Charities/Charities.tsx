@@ -32,8 +32,8 @@ class Charities extends React.Component<{}, {charities: Charity[]}> {
             }
         }
     }
-    
-    charityDonateClicked(charity: Charity) {
+
+    charityDonateButtonClicked(charity: Charity) {
         const url = `${process.env.REACT_APP_JG_DONATE_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${this.playerId}`;
         window.location.replace(url);
     }
@@ -59,7 +59,7 @@ class Charities extends React.Component<{}, {charities: Charity[]}> {
                                                                                 src={charity.logoAbsoluteUrl}/></td>
                                         <td className="charity-table-data"><p>{charity.name}</p></td>
                                         <td className="charity-table-data">
-                                            <button className="btn btn-success charity-button" onClick={() => this.charityDonateClicked(charity)}>Donate</button>
+                                            <button className="btn btn-success charity-button" onClick={() => this.charityDonateButtonClicked(charity)}>Donate</button>
                                         </td>
                                         <td className="charity-table-data"><p>{charity.description}</p></td>
                                     </tr>
