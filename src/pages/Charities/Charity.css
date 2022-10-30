@@ -1,0 +1,20 @@
+﻿.charity-row {
+    padding: 10%;
+}
+
+.charity-image {
+    height: 50%;
+    width: 50%;
+}
+
+.charity-table, .charity-table th {
+    text-align: center;
+}
+
+.charity-table-data {
+    vertical-align: middle !important;
+}
+
+.charity-button {
+    font-size: 20px;
+}
