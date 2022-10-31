@@ -8,7 +8,7 @@ export class Donation {
     charityId: number;
     charityName: string;
     paidForId: string;
-    paidForBy: Player
+    paidForBy: Player | undefined;
     
     constructor(id: string,
     amount: number,
@@ -16,7 +16,7 @@ export class Donation {
     charityId: number,
     charityName: string,
     paidForId: string,
-    paidForBy: Player) {
+    paidForBy: Player | undefined) {
         this.id = id;
         this.amount = amount;
         this.createdDate = createdDate;

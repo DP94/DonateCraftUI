@@ -7,6 +7,7 @@ import './Player.css';
 class Players extends React.Component<{}, { players: Player[] }> {
 
     playerService = new PlayersService();
+    timer : number = 0;
     
     constructor(props: any) {
         super(props);
@@ -15,7 +16,16 @@ class Players extends React.Component<{}, { players: Player[] }> {
         }        
     }
     
-    async componentDidMount() {
+    async componentDidMount() {        
+        await this.getPlayers();
+        this.timer = window.setInterval(()=> this.getPlayers(), 15000);
+    }
+    
+    componentWillUnmount() {
+        window.clearInterval(this.timer);
+    }
+
+    async getPlayers(){
         const playerList: Player[] = await this.playerService.getPlayers();
         this.setState({
             players : playerList
@@ -34,7 +44,7 @@ class Players extends React.Component<{}, { players: Player[] }> {
         if (this.state && this.state.players.length !== 0){
             return (
                 <div>
-                    <table className="players-table table-striped table table-hover table-responsive">
+                    <table className="players-table table-striped table table-hover table-responsive" data-testid="playersTable">
                         <thead className="table-light">
                             <tr>
                                 <th></th>
@@ -50,13 +60,13 @@ class Players extends React.Component<{}, { players: Player[] }> {
                             this.state.players.map((player) => (
                                 <tr className="players-row">
                                     <td className="players-table-data">
-                                        <img className="players-image" src={`https://crafatar.com/avatars/${player.id}`} />
+                                        <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
                                     </td>
-                                    <td className="players-table-data"><p>{player.name}</p></td>
-                                    <td className="players-table-data">{player.deaths.length > 0 ? player.deaths[player.deaths.length - 1].reason : "No deaths!"}</td>
-                                    <td className="players-table-data"> TODO! </td>
-                                    <td className="players-table-data">{player.deaths.length}</td>
-                                    <td className="players-table-data">{this.getDonationTotal(player.donations)}</td>
+                                    <td className="players-table-data" data-testid="playerName"><p>{player.name}</p></td>
+                                    <td className="players-table-data" data-testid="playerDeathReason">{player.deaths.length > 0 ? player.deaths[player.deaths.length - 1].reason : "No deaths!"}</td>
+                                    <td className="players-table-data" data-testid="playerDeathStatus">{player.isDead ? "Dead" : "Alive"}</td>
+                                    <td className="players-table-data" data-testid="playerDeathCount">{player.deaths.length}</td>
+                                    <td className="players-table-data" data-testid="playerDonationSum">{this.getDonationTotal(player.donations)}</td>
                                 </tr>
                             ))
                         }
@@ -65,7 +75,7 @@ class Players extends React.Component<{}, { players: Player[] }> {
                 </div>
             )
         } else {
-            return <span>Loading...</span>
+            return <span data-testid="loadingText">Loading...</span>
         }
     }    
 }

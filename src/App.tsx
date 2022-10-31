@@ -10,12 +10,7 @@ import Charities from "./pages/Charities/Charities";
 function App() {
   return (
     <div className="App">
-      <Navbar/>
-        <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/players" element={<Players/>} />
-            <Route path="/charities" element={<Charities/>} />
-        </Routes>
+        
     </div>
   );
 }
