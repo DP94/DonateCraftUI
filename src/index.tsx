@@ -3,7 +3,11 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter as Router } from "react-router-dom";
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import Navbar from "./navbar/Navbar";
+import Home from "./pages/home/Home";
+import Players from "./pages/players/Players";
+import Charities from "./pages/Charities/Charities";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -11,7 +15,13 @@ const root = ReactDOM.createRoot(
 
 root.render(
       <Router>
+          <Navbar/>
           <App/>
+          <Routes>
+              <Route path="/" element={<Home/>} />
+              <Route path="/players" element={<Players/>} />
+              <Route path="/charities" element={<Charities/>} />
+          </Routes>
       </Router>
 );
 

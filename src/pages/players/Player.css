@@ -1,0 +1,18 @@
+﻿.players-table, .players-table th {
+    text-align: center;
+}
+
+.players-row {
+    padding: 10%;
+}
+
+.players-table-data {
+    vertical-align: middle !important;
+    text-align: center;
+    font-size: 200%;
+}
+
+.players-image {
+    height: 50%;
+    width: 50%;
+}
