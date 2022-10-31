@@ -1,16 +1,11 @@
-name: DonateCraftUI build
-
-on: [push, pull_request]
-
+name: CI
+on: push
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Test using Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '12'
-      - run: npm install
-      - run: npm test
-    
+    - uses: actions/checkout@v2
+    - name: Install modules
+      run: yarn
+    - name: Run tests
+      run: yarn test
