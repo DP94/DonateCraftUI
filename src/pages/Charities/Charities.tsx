@@ -42,7 +42,7 @@ class Charities extends React.Component<{}, {charities: Charity[]}> {
         if (this.state && this.state.charities.length !== 0) {
             return (
                 <div>
-                    <table className="charity-table table-striped table table-hover table-responsive">
+                    <table className="charity-table table-striped table table-hover table-responsive table-bordered">
                         <thead className="table-light">
                             <tr>
                                 <th></th>

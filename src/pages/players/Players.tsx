@@ -40,11 +40,15 @@ class Players extends React.Component<{}, { players: Player[] }> {
         return total;
     }
     
+    onPlayerDonateClicked(player: Player) {
+        window.location.replace(`/charities?playerId=${player.id}`);
+    }
+    
     render(){
         if (this.state && this.state.players.length !== 0){
             return (
                 <div>
-                    <table className="players-table table-striped table table-hover table-responsive" data-testid="playersTable">
+                    <table className="players-table table-striped table table-hover table-responsive table-bordered" data-testid="playersTable">
                         <thead className="table-light">
                             <tr>
                                 <th></th>
@@ -64,7 +68,17 @@ class Players extends React.Component<{}, { players: Player[] }> {
                                     </td>
                                     <td className="players-table-data" data-testid="playerName"><p>{player.name}</p></td>
                                     <td className="players-table-data" data-testid="playerDeathReason">{player.deaths.length > 0 ? player.deaths[player.deaths.length - 1].reason : "No deaths!"}</td>
-                                    <td className="players-table-data" data-testid="playerDeathStatus">{player.isDead ? "Dead" : "Alive"}</td>
+                                    <td className="players-table-data" data-testid="playerDeathStatus">
+                                        {
+                                            player.isDead ?
+                                            <div>
+                                                <p>Dead</p>
+                                                <button className="btn btn-success player-donate-button" data-testid="playerDeadButton" onClick={() => this.onPlayerDonateClicked(player)}>Donate</button>
+                                             </div> 
+                                            : 
+                                            "Alive"
+                                        }
+                                    </td>
                                     <td className="players-table-data" data-testid="playerDeathCount">{player.deaths.length}</td>
                                     <td className="players-table-data" data-testid="playerDonationSum">{this.getDonationTotal(player.donations)}</td>
                                 </tr>

@@ -23,6 +23,13 @@ describe("Players page", function (){
         expect(screen.getByTestId("playerName")).toHaveTextContent("TestPlayer");
         expect(screen.getByTestId("playerDeathReason")).toHaveTextContent("Died from Testing");
         expect(screen.getByTestId("playerDeathCount")).toHaveTextContent("1");
+        
+        const button = screen.getByTestId("playerDeadButton");
+        expect(button).toHaveTextContent("Donate");
+        expect(button).toHaveClass('btn', 'btn-success', 'player-donate-button');
+        expect(button).toBeVisible();
+        
+        expect(screen.getByTestId("playerDeadButton")).toHaveTextContent("Donate");
         expect(screen.getByTestId("playerDeathStatus")).toHaveTextContent("Dead");
         expect(screen.getByTestId("playerDonationSum")).toHaveTextContent("133.55");        
     });
