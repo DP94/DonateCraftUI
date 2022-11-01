@@ -58,7 +58,7 @@ class Players extends React.Component<{}, { players: Player[] }> {
                         <tbody>
                         {
                             this.state.players.map((player) => (
-                                <tr className="players-row">
+                                <tr className="players-row" key={player.id}>
                                     <td className="players-table-data">
                                         <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
                                     </td>

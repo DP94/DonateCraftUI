@@ -54,7 +54,7 @@ class Charities extends React.Component<{}, {charities: Charity[]}> {
                         <tbody>
                             {
                                 this.state.charities.map((charity) => (
-                                    <tr className="charity-row">
+                                    <tr className="charity-row" key={charity.id}>
                                         <td className="charity-table-data"><img className="charity-image"
                                                                                 src={charity.logoAbsoluteUrl}/></td>
                                         <td className="charity-table-data"><p>{charity.name}</p></td>
