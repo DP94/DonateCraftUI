@@ -9,7 +9,7 @@ import '@testing-library/jest-dom';
 describe("Players page", function (){
     it('renders list of players', async () => {
         const playerId = "3a0c7a69-c12f-4f7f-9aaf-3345bb0f2e38";
-        const playerMockData = getPlayersMockData(playerId);
+        const playerMockData = getDeadPlayer(playerId);
         await act(() => {
             global.fetch = jest.fn(() =>
                 Promise.resolve({
@@ -33,8 +33,22 @@ describe("Players page", function (){
         expect(screen.getByTestId("playerDeathStatus")).toHaveTextContent("Dead");
         expect(screen.getByTestId("playerDonationSum")).toHaveTextContent("133.55");        
     });
+
+    it('renders alive player with alive text', async () => {
+        const playerId = "test123";
+        const playerMockData = getAlivePlayerWithNoDonations(playerId);
+        await act(() => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    json: () => Promise.resolve(playerMockData),
+                }),
+            ) as jest.Mock;
+            render(<Players />);
+        });
+        expect(screen.getByTestId("playerDeathStatus")).toHaveTextContent("Alive");
+    });
     
-    it('displays loading message if no players',async () => {
+    it('displays loading message if request is still loading',async () => {
         const emptyPlayersList = [] as Player[];
         await act(() => {
             global.fetch = jest.fn(() =>
@@ -44,13 +58,19 @@ describe("Players page", function (){
             ) as jest.Mock;
             render(<Players />);
         });
-        expect(screen.getByTestId("loadingText")).toHaveTextContent("Loading...");
+        expect(screen.getByTestId("noPlayers")).toHaveTextContent("No players ☹");
     });
 });
 
-function getPlayersMockData(playerId: string) : Player[] {    
+function getDeadPlayer(playerId: string) : Player[] {    
     return [
         new Player(playerId, "TestPlayer", true, getMockDeaths(playerId), getMockDonations(playerId) )
+    ];
+}
+
+function getAlivePlayerWithNoDonations(playerId: string): Player[] {
+    return [
+        new Player(playerId, "TestPlayer", false, [], [])
     ];
 }
 

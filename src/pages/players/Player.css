@@ -4,19 +4,45 @@
 
 .players-row {
     padding: 10%;
+    font-size: 64px;
 }
 
-.players-table-data {
+.players-table-data, .players-table-data-image {
     vertical-align: middle !important;
     text-align: center;
-    font-size: 200%;
 }
 
-.players-image {
-    height: 50%;
-    width: 50%;
+.players-table-data-image {
+    text-align: left;
+}
+
+.players-table-data-image span {
+    margin-left: 10px;
 }
 
 .player-donate-button {
     font-size: 20px;
+}
+
+.player-dead {
+    display: flex;
+    flex-flow: column;
+}
+
+
+.player-alive-text, .player-dead-text {
+    font-weight: bold;
+}
+
+.player-dead-text {
+    color: red;
+}
+
+.player-alive-text {
+    color: lawngreen;
+}
+
+.death-reason {
+    font-size: 32px;
+    white-space: nowrap;
 }
