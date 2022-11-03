@@ -1,4 +1,8 @@
-﻿.players-table, .players-table th {
+﻿* {
+    font-family: Minecraftia;
+}
+
+.players-table, .players-table th {
     text-align: center;
 }
 
