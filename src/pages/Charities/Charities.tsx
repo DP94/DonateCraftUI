@@ -2,8 +2,9 @@
 import CharityService from "./charity-service";
 import Charity from "./charity";
 import './Charity.css';
+import LoadingSpinner from "../../loader/LoadingSpinner";
 
-class Charities extends React.Component<{}, {charities: Charity[]}> {
+class Charities extends React.Component<{}, {charities: Charity[], loading: boolean}> {
     
     charityService = new CharityService();
     playerId = '';
@@ -11,13 +12,17 @@ class Charities extends React.Component<{}, {charities: Charity[]}> {
     constructor(props: any) {
         super(props);
         this.state = {
-            charities: []
+            charities: [],
+            loading: false
         }
-        const p = new URLSearchParams(window.location.search);
-        this.playerId = p.get('playerId') ?? '';
+        const params = new URLSearchParams(window.location.search);
+        this.playerId = params.get('playerId') ?? '';
     }
     
     async componentDidMount() {
+        this.setState({
+            loading: true
+        })
         const charityIds: Charity[] = await this.charityService.getCharityIds();
         for (let i = 0; i < charityIds.length; i++) {
             const charityId = charityIds[i].id;
@@ -31,6 +36,9 @@ class Charities extends React.Component<{}, {charities: Charity[]}> {
                 console.log(e);
             }
         }
+        this.setState({
+            loading: false
+        })
     }
 
     charityDonateButtonClicked(charity: Charity) {
@@ -42,7 +50,7 @@ class Charities extends React.Component<{}, {charities: Charity[]}> {
         if (this.state && this.state.charities.length !== 0) {
             return (
                 <div>
-                    <table className="charity-table table-striped table table-hover table-responsive">
+                    <table className="charity-table table-striped table table-hover table-responsive table-bordered">
                         <thead className="table-light">
                             <tr>
                                 <th></th>
@@ -70,7 +78,7 @@ class Charities extends React.Component<{}, {charities: Charity[]}> {
                 </div>
             )
         } else {
-            return <span>Loading...</span>
+            return <LoadingSpinner/>
         }
     }
 }
