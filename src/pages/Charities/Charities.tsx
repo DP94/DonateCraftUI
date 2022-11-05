@@ -47,7 +47,7 @@ class Charities extends React.Component<{}, {charities: Charity[], loading: bool
     }
 
     render() {
-        if (this.state && this.state.charities.length !== 0) {
+        if (this.state && this.state.charities && this.state.charities.length !== 0 && !this.state.loading){
             return (
                 <div>
                     <table className="charity-table table-striped table table-hover table-responsive table-bordered">
@@ -77,6 +77,8 @@ class Charities extends React.Component<{}, {charities: Charity[], loading: bool
                     </table>
                 </div>
             )
+        } else if (this.state && this.state.charities && this.state.charities.length == 0 && !this.state.loading) {
+            return <div className="no-players-text"><span data-testid="noPlayers">No charities ☹</span></div>
         } else {
             return <LoadingSpinner/>
         }

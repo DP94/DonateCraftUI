@@ -4,8 +4,9 @@ import {Player} from "./player";
 import {Donation} from "./donation";
 import './Player.css';
 import LoadingSpinner from "../../loader/LoadingSpinner";
+import PlayerSelector from "./PlayerSelector";
 
-class Players extends React.Component<{}, { players: Player[], loading: boolean }> {
+class Players extends React.Component<{}, { players: Player[], loading: boolean, showModal: boolean }> {
 
     playerService = new PlayersService();
     timer : number = 0;
@@ -14,19 +15,20 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean 
         super(props);
         this.state = {
             players: [],
-            loading: false
+            loading: false,
+            showModal: false
         }        
     }
     
     async componentDidMount() {
         this.setState({
-            loading: true
+            loading: true,
         });
         await this.getPlayers();
         this.setState({
-            loading: false
+            loading: false,
         });
-        this.timer = window.setInterval(()=> this.getPlayers(), 2000);
+        this.timer = window.setInterval(()=> this.getPlayers(), 10000);
     }
     
     componentWillUnmount() {
@@ -48,14 +50,34 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean 
         return total;
     }
     
-    onPlayerDonateClicked(player: Player) {
-        window.location.replace(`/charities?playerId=${player.id}`);
+    onPlayerDonateClicked() {
+        this.setState({
+            showModal: true
+        })
+    }
+    
+    onModalPlayerSelected = (id: string) => {
+        this.setState({
+            showModal: false
+        })
+        window.location.replace(`/charities?playerId=${id}`);
+    }
+    
+    toggleModal = () => {
+        this.setState({
+            showModal: !this.state.showModal
+        })
     }
     
     render(){
-        if (this.state && this.state.players && this.state.players.length !== 0 && !this.state.loading){
+        if (this.state && this.state.players && this.state.players.length == 0 && !this.state.loading) {
+            return <div className="no-players-text"><span data-testid="noPlayers">No players ☹</span></div>
+        } else if (this.state.loading) {
+            return <LoadingSpinner/>
+        } else if (this.state && this.state.players && this.state.players.length !== 0){
             return (
                 <div>
+                    <PlayerSelector players={this.state.players} show={this.state.showModal} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
                     <table className="players-table table-striped table table-hover table-responsive table-bordered" data-testid="playersTable">
                         <thead className="table-light">
                             <tr>
@@ -72,7 +94,7 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean 
                                 <tr className="players-row" key={player.id}>
                                     <td className="players-table-data-image">
                                         <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
-                                        <span data-testid="playerName">{player.name}</span>
+                                        <span data-testid="playerName" className="player-name">{player.name}</span>
                                     </td>
                                     <td className="players-table-data death-reason" data-testid="playerDeathReason">{player.deaths.length > 0 ? player.deaths[player.deaths.length - 1].reason : "No deaths!"}</td>
                                     <td className="players-table-data" data-testid="playerDeathStatus">
@@ -80,7 +102,7 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean 
                                             player.isDead ?
                                             <div className="player-dead">
                                                 <span className="player-dead-text">Dead</span>
-                                                <button className="btn btn-success player-donate-button" data-testid="playerDeadButton" onClick={() => this.onPlayerDonateClicked(player)}>Donate</button>
+                                                <button className="btn btn-success player-donate-button" data-testid="playerDeadButton" onClick={() => this.onPlayerDonateClicked()}>Donate</button>
                                              </div> 
                                             : 
                                             <span className="player-alive-text">Alive</span>
@@ -95,10 +117,6 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean 
                     </table>
                 </div>
             )
-        } else if (this.state && this.state.players && this.state.players.length == 0 && !this.state.loading) {
-            return <div className="no-players-text"><span data-testid="noPlayers">No players ☹</span></div>
-        } else {
-            return <LoadingSpinner/>
         }
     }    
 }
