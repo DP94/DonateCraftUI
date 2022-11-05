@@ -56,11 +56,15 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
         })
     }
     
-    onModalPlayerSelected = (id: string) => {
+    onModalPlayerSelected = (playerId: string, donorId: string) => {
         this.setState({
             showModal: false
         })
-        window.location.replace(`/charities?playerId=${id}`);
+        let url = `/charities?playerId=${playerId}`;
+        if (playerId !== donorId) {
+            url += `&donorId=${donorId}`;
+        }
+        window.location.replace(url);
     }
     
     toggleModal = () => {
@@ -77,7 +81,6 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
         } else if (this.state && this.state.players && this.state.players.length !== 0){
             return (
                 <div>
-                    <PlayerSelector players={this.state.players} show={this.state.showModal} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
                     <table className="players-table table-striped table table-hover table-responsive table-bordered" data-testid="playersTable">
                         <thead className="table-light">
                             <tr>
@@ -92,6 +95,7 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
                         {
                             this.state.players.map((player) => (
                                 <tr className="players-row" key={player.id}>
+                                    <PlayerSelector players={this.state.players} currentPlayer={player.id} show={this.state.showModal} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
                                     <td className="players-table-data-image">
                                         <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
                                         <span data-testid="playerName" className="player-name">{player.name}</span>

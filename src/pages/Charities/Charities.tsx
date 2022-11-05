@@ -8,6 +8,7 @@ class Charities extends React.Component<{}, {charities: Charity[], loading: bool
     
     charityService = new CharityService();
     playerId = '';
+    donorId = '';
     
     constructor(props: any) {
         super(props);
@@ -17,6 +18,7 @@ class Charities extends React.Component<{}, {charities: Charity[], loading: bool
         }
         const params = new URLSearchParams(window.location.search);
         this.playerId = params.get('playerId') ?? '';
+        this.donorId = params.get('donorId') ?? '';
     }
     
     async componentDidMount() {
@@ -42,7 +44,10 @@ class Charities extends React.Component<{}, {charities: Charity[], loading: bool
     }
 
     charityDonateButtonClicked(charity: Charity) {
-        const url = `${process.env.REACT_APP_JG_DONATE_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${this.playerId}`;
+        let url = `${process.env.REACT_APP_JG_DONATE_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${this.playerId}`;
+        if (this.donorId && this.donorId !== '') {
+            url += `~${this.donorId}`;
+        }
         window.location.replace(url);
     }
 

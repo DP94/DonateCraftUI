@@ -14,7 +14,7 @@ const PlayerSelector = (props: any) => {
                 {
                     props.players.map((player: Player) => (
                         <ul className="player-choice">
-                            <li key={player.id} className="player-record w-100" onClick={() => props.playerSelected(player.id)}>
+                            <li key={player.id} className="player-record w-100" onClick={() => props.playerSelected(props.currentPlayer, player.id)}>
                                 <img className="player-choice-image col-sm-1" src={`https://crafatar.com/avatars/${player.id}`}/>
                                 <span className="player-choice-span col-sm-2">{player.name}</span>
                             </li>
