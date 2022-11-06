@@ -4,19 +4,24 @@ import {Player} from "./player";
 import {Donation} from "./donation";
 import './Player.css';
 import LoadingSpinner from "../../loader/LoadingSpinner";
-import PlayerSelector from "./PlayerSelector";
+import PlayerSelector from "../../modals/PlayerSelector";
+import InactivityModal from "../../modals/InactivityModal";
 
-class Players extends React.Component<{}, { players: Player[], loading: boolean, showModal: boolean }> {
+export default class Players extends React.Component<{}, { players: Player[], loading: boolean, showPlayerSelector: boolean, showInactivityModal: boolean, currentRateLimit: number }> {
 
     playerService = new PlayersService();
     timer : number = 0;
+    //5 minutes
+    rateLimit: number = 30;
     
     constructor(props: any) {
         super(props);
         this.state = {
             players: [],
             loading: false,
-            showModal: false
+            showPlayerSelector: false,
+            showInactivityModal: false,
+            currentRateLimit: 0
         }        
     }
     
@@ -35,10 +40,17 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
         window.clearInterval(this.timer);
     }
 
-    async getPlayers(){
+    async getPlayers() {
+        if (this.state.currentRateLimit >= this.rateLimit) {
+            this.setState({
+                showInactivityModal: true
+            })
+            return;
+        }
         const playerList: Player[] = await this.playerService.getPlayers();
         this.setState({
             players : playerList,
+            currentRateLimit : this.state.currentRateLimit + 1
         });
     }
 
@@ -52,13 +64,13 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
     
     onPlayerDonateClicked() {
         this.setState({
-            showModal: true
+            showPlayerSelector: true
         })
     }
     
     onModalPlayerSelected = (playerId: string, donorId: string) => {
         this.setState({
-            showModal: false
+            showPlayerSelector: false
         })
         let url = `/charities?playerId=${playerId}`;
         if (playerId !== donorId) {
@@ -69,7 +81,19 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
     
     toggleModal = () => {
         this.setState({
-            showModal: !this.state.showModal
+            showPlayerSelector: !this.state.showPlayerSelector
+        })
+    }
+    toggleInactivityModal = () => {
+        this.setState({
+            showInactivityModal: !this.state.showInactivityModal
+        })
+    }
+    
+    onInactivityModalContinuePressed = () => {
+        this.setState({
+            currentRateLimit : 0,
+            showInactivityModal: false
         })
     }
     
@@ -81,6 +105,7 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
         } else if (this.state && this.state.players && this.state.players.length !== 0){
             return (
                 <div>
+                    <InactivityModal show={this.state.showInactivityModal} toggle={this.toggleInactivityModal} continueButtonOnClick={this.onInactivityModalContinuePressed}/>
                     <table className="players-table table-striped table table-hover table-responsive table-bordered" data-testid="playersTable">
                         <thead className="table-light">
                             <tr>
@@ -95,7 +120,7 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
                         {
                             this.state.players.map((player) => (
                                 <tr className="players-row" key={player.id}>
-                                    <PlayerSelector players={this.state.players} currentPlayer={player.id} show={this.state.showModal} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
+                                    <PlayerSelector players={this.state.players} currentPlayer={player.id} show={this.state.showPlayerSelector} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
                                     <td className="players-table-data-image">
                                         <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
                                         <span data-testid="playerName" className="player-name">{player.name}</span>
@@ -113,7 +138,7 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
                                         }
                                     </td>
                                     <td className="players-table-data" data-testid="playerDeathCount">{player.deaths.length}</td>
-                                    <td className="players-table-data" data-testid="playerDonationSum">{this.getDonationTotal(player.donations)}</td>
+                                    <td className="players-table-data" data-testid="playerDonationSum">£{this.getDonationTotal(player.donations)}</td>
                                 </tr>
                             ))
                         }
@@ -124,5 +149,3 @@ class Players extends React.Component<{}, { players: Player[], loading: boolean,
         }
     }    
 }
-
-export default Players;
