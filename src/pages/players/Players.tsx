@@ -43,7 +43,9 @@ export default class Players extends React.Component<{}, { players: Player[], lo
     async getPlayers() {
         if (this.state.currentRateLimit >= this.rateLimit) {
             this.setState({
-                showInactivityModal: true
+                showInactivityModal: true,
+                showPlayerSelector: false,
+                loading: false,
             })
             return;
         }
@@ -64,7 +66,9 @@ export default class Players extends React.Component<{}, { players: Player[], lo
     
     onPlayerDonateClicked() {
         this.setState({
-            showPlayerSelector: true
+            showPlayerSelector: true,
+            //Player is clearly active on page
+            currentRateLimit : 0
         })
     }
     
