@@ -1,4 +1,4 @@
-﻿import { render, screen } from "@testing-library/react";
+﻿import {fireEvent, render, RenderResult, screen} from "@testing-library/react";
 import Players from "../pages/players/Players";
 import {Player} from "../pages/players/player";
 import {Death} from "../pages/players/death";
@@ -31,7 +31,7 @@ describe("Players page", function (){
         
         expect(screen.getByTestId("playerDeadButton")).toHaveTextContent("Donate");
         expect(screen.getByTestId("playerDeathStatus")).toHaveTextContent("Dead");
-        expect(screen.getByTestId("playerDonationSum")).toHaveTextContent("133.55");        
+        expect(screen.getByTestId("playerDonationSum")).toHaveTextContent("£133.55");        
     });
 
     it('renders alive player with alive text', async () => {
@@ -59,6 +59,28 @@ describe("Players page", function (){
             render(<Players />);
         });
         expect(screen.getByTestId("noPlayers")).toHaveTextContent("No players ☹");
+    });
+    
+    it('displays player selector when donate button clicked', async () => {
+        const playerId = "3a0c7a69-c12f-4f7f-9aaf-3345bb0f2e38";
+        const playerMockData = getDeadPlayer(playerId);
+        await act(async () => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    json: () => Promise.resolve(playerMockData),
+                }),
+            ) as jest.Mock;
+            render(<Players />);
+        });
+        const button = screen.getByTestId("playerDeadButton");
+        fireEvent.click(button);
+        const modalHeader = screen.getByTestId('playerSelectorHeader');
+        const playerChoiceImage = screen.getByTestId('playerChoiceImage0')
+        const playerChoiceName = screen.getByTestId('playerChoiceName0')
+
+        expect(modalHeader).toHaveTextContent('Who is donating?');
+        expect(playerChoiceImage).toHaveAttribute("src",`https://crafatar.com/avatars/${playerId}`)
+        expect(playerChoiceName).toHaveTextContent(`${playerMockData[0].name}`)
     });
 });
 
