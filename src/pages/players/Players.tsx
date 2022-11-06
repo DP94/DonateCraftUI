@@ -99,6 +99,7 @@ export default class Players extends React.Component<{}, { players: Player[], lo
             currentRateLimit : 0,
             showInactivityModal: false
         })
+        this.getPlayers();
     }
     
     render(){
