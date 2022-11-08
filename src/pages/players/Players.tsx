@@ -58,12 +58,12 @@ export default class Players extends React.Component<{}, { players: Player[], lo
         });
     }
 
-    getDonationTotal(donations : Donation[]) : number {
+    getDonationTotal(donations : Donation[]) : string {
         let total = 0;
         for (const donation of donations){
             total += donation.amount;
         }
-        return total;
+        return total.toFixed(2);
     }
     
     onPlayerDonateClicked(currentPlayerId: string) {
