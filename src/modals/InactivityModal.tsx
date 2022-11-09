@@ -4,7 +4,7 @@ import React from "react";
 const InactivityModal = (props: {show: boolean, toggle: () => void, continueButtonOnClick: () => void }) => {
     if (props.show) {
         return <Modal show={props.show} centered={true}>
-            <Modal.Header className="modal-header donate-header" closeButton onHide={props.toggle}>
+            <Modal.Header className="modal-header donate-header">
                 <Modal.Title>Inactive for too long</Modal.Title>
             </Modal.Header>
 

@@ -5,7 +5,12 @@ class Home extends React.Component {
     
     render() {
         return (
-            <h1 className="title">DonateCraft</h1>
+            <div>
+                <h1 className="title">DonateCraft</h1>
+                
+                <h3>Stuff to go here</h3>
+            </div>
+
         )
     }
 }

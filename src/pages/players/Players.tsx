@@ -7,7 +7,8 @@ import LoadingSpinner from "../../loader/LoadingSpinner";
 import PlayerSelector from "../../modals/PlayerSelector";
 import InactivityModal from "../../modals/InactivityModal";
 
-export default class Players extends React.Component<{}, { players: Player[], loading: boolean, showPlayerSelector: boolean, showInactivityModal: boolean, currentRateLimit: number }> {
+
+export default class Players extends React.Component<{}, { players: Player[], loading: boolean, showPlayerSelector: boolean, showInactivityModal: boolean, currentRateLimit: number, currentPlayerId: string }> {
 
     playerService = new PlayersService();
     timer : number = 0;
@@ -21,7 +22,8 @@ export default class Players extends React.Component<{}, { players: Player[], lo
             loading: false,
             showPlayerSelector: false,
             showInactivityModal: false,
-            currentRateLimit: 0
+            currentRateLimit: 0,
+            currentPlayerId: ''
         }        
     }
     
@@ -56,19 +58,20 @@ export default class Players extends React.Component<{}, { players: Player[], lo
         });
     }
 
-    getDonationTotal(donations : Donation[]) : number {
+    getDonationTotal(donations : Donation[]) : string {
         let total = 0;
         for (const donation of donations){
             total += donation.amount;
         }
-        return total;
+        return total.toFixed(2);
     }
     
-    onPlayerDonateClicked() {
+    onPlayerDonateClicked(currentPlayerId: string) {
         this.setState({
             showPlayerSelector: true,
             //Player is clearly active on page
-            currentRateLimit : 0
+            currentRateLimit : 0,
+            currentPlayerId: currentPlayerId
         })
     }
     
@@ -111,6 +114,7 @@ export default class Players extends React.Component<{}, { players: Player[], lo
             return (
                 <div>
                     <InactivityModal show={this.state.showInactivityModal} toggle={this.toggleInactivityModal} continueButtonOnClick={this.onInactivityModalContinuePressed}/>
+                    <PlayerSelector players={this.state.players} currentPlayer={this.state.currentPlayerId} show={this.state.showPlayerSelector} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
                     <table className="players-table table-striped table table-hover table-responsive table-bordered" data-testid="playersTable">
                         <thead className="table-light">
                             <tr>
@@ -125,7 +129,6 @@ export default class Players extends React.Component<{}, { players: Player[], lo
                         {
                             this.state.players.map((player) => (
                                 <tr className="players-row" key={player.id}>
-                                    <PlayerSelector players={this.state.players} currentPlayer={player.id} show={this.state.showPlayerSelector} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
                                     <td className="players-table-data-image">
                                         <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
                                         <span data-testid="playerName" className="player-name">{player.name}</span>
@@ -136,7 +139,7 @@ export default class Players extends React.Component<{}, { players: Player[], lo
                                             player.isDead ?
                                             <div className="player-dead">
                                                 <span className="player-dead-text">Dead</span>
-                                                <button className="btn btn-success player-donate-button" data-testid="playerDeadButton" onClick={() => this.onPlayerDonateClicked()}>Donate</button>
+                                                <button className="btn btn-success player-donate-button" data-testid="playerDeadButton" onClick={() => this.onPlayerDonateClicked(player.id)}>Donate</button>
                                              </div> 
                                             : 
                                             <span className="player-alive-text">Alive</span>
