@@ -130,8 +130,10 @@ export default class Players extends React.Component<{}, { players: Player[], lo
                             this.state.players.map((player) => (
                                 <tr className="players-row" key={player.id}>
                                     <td className="players-table-data-image">
-                                        <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
-                                        <span data-testid="playerName" className="player-name">{player.name}</span>
+                                        <div className="player-info-container">
+                                            <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
+                                            <span data-testid="playerName" className="player-name">{player.name}</span>
+                                        </div>
                                     </td>
                                     <td className="players-table-data death-reason" data-testid="playerDeathReason">{player.deaths.length > 0 ? player.deaths[player.deaths.length - 1].reason : "No deaths!"}</td>
                                     <td className="players-table-data" data-testid="playerDeathStatus">
