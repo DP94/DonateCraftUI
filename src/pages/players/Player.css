@@ -49,3 +49,8 @@
 .death-reason, .player-name {
     font-size: 32px;
 }
+
+.player-info-container {
+    display: flex;
+    align-items: center;
+}
