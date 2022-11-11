@@ -8,7 +8,7 @@ import PlayerSelector from "../../modals/PlayerSelector";
 import InactivityModal from "../../modals/InactivityModal";
 
 
-export default class Players extends React.Component<{}, { players: Player[], loading: boolean, showPlayerSelector: boolean, showInactivityModal: boolean, currentRateLimit: number, currentPlayerId: string }> {
+export default class Players extends React.Component<{}, { players: Player[], loading: boolean, showPlayerSelector: boolean, showInactivityModal: boolean, currentRateLimit: number, currentPlayer: Player | null }> {
 
     playerService = new PlayersService();
     timer : number = 0;
@@ -23,7 +23,7 @@ export default class Players extends React.Component<{}, { players: Player[], lo
             showPlayerSelector: false,
             showInactivityModal: false,
             currentRateLimit: 0,
-            currentPlayerId: ''
+            currentPlayer: null
         }        
     }
     
@@ -66,22 +66,22 @@ export default class Players extends React.Component<{}, { players: Player[], lo
         return total.toFixed(2);
     }
     
-    onPlayerDonateClicked(currentPlayerId: string) {
+    onPlayerDonateClicked(currentPlayer: Player) {
         this.setState({
             showPlayerSelector: true,
             //Player is clearly active on page
             currentRateLimit : 0,
-            currentPlayerId: currentPlayerId
+            currentPlayer: currentPlayer
         })
     }
     
-    onModalPlayerSelected = (playerId: string, donorId: string) => {
+    onModalPlayerSelected = (player: Player, donor: Player) => {
         this.setState({
             showPlayerSelector: false
         })
-        let url = `/charities?playerId=${playerId}`;
-        if (playerId !== donorId) {
-            url += `&donorId=${donorId}`;
+        let url = `/charities?playerId=${player.id}`;
+        if (player.id !== donor.id) {
+            url += `&donorId=${donor.id}`;
         }
         window.location.replace(url);
     }
@@ -114,7 +114,7 @@ export default class Players extends React.Component<{}, { players: Player[], lo
             return (
                 <div>
                     <InactivityModal show={this.state.showInactivityModal} toggle={this.toggleInactivityModal} continueButtonOnClick={this.onInactivityModalContinuePressed}/>
-                    <PlayerSelector players={this.state.players} currentPlayer={this.state.currentPlayerId} show={this.state.showPlayerSelector} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
+                    <PlayerSelector players={this.state.players} currentPlayer={this.state.currentPlayer} show={this.state.showPlayerSelector} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
                     <table className="players-table table-striped table table-hover table-responsive table-bordered" data-testid="playersTable">
                         <thead className="table-light">
                             <tr>
@@ -141,7 +141,7 @@ export default class Players extends React.Component<{}, { players: Player[], lo
                                             player.isDead ?
                                             <div className="player-dead">
                                                 <span className="player-dead-text">Dead</span>
-                                                <button className="btn btn-success player-donate-button" data-testid="playerDeadButton" onClick={() => this.onPlayerDonateClicked(player.id)}>Donate</button>
+                                                <button className="btn btn-success player-donate-button" data-testid="playerDeadButton" onClick={() => this.onPlayerDonateClicked(player)}>Donate</button>
                                              </div> 
                                             : 
                                             <span className="player-alive-text">Alive</span>
