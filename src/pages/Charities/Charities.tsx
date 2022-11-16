@@ -33,13 +33,13 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
         this.setState({
             loading: true
         })
-        const charityIds: Charity[] = await this.charityService.getCharityIds();
-        for (let i = 0; i < charityIds.length; i++) {
-            const charityId = charityIds[i].id;
+        const charities: Charity[] = await this.charityService.getCharityIds();
+        for (let i = 0; i < charities.length; i++) {
+            const charity = charities[i];
             try {
-                const charityDetails = await this.charityService.getCharityDetails(charityId);
+                charity.justGivingCharity = await this.charityService.getCharityDetails(charity.id);
                 this.setState( {
-                    charities : [...this.state.charities, charityDetails]
+                    charities : [...this.state.charities, charity]
                 });
             } catch(e) {
                 //Some charities can not be found
@@ -87,6 +87,7 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
                 pauseOnHover: true,
                 draggable: true,
                 progress: undefined,
+                pauseOnFocusLoss: false,
                 theme: "colored",
             });
             return;
@@ -120,12 +121,12 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
                                 this.state.charities.map((charity) => (
                                     <tr className="charity-row" key={charity.id}>
                                         <td className="charity-table-data"><img className="charity-image"
-                                                                                src={charity.logoAbsoluteUrl}/></td>
-                                        <td className="charity-table-data"><p>{charity.name}</p></td>
+                                                                                src={charity.justGivingCharity.logoAbsoluteUrl}/></td>
+                                        <td className="charity-table-data"><p>{charity.justGivingCharity.name}</p></td>
                                         <td className="charity-table-data">
                                             <button className="btn btn-success charity-button" onClick={() => this.charityDonateButtonClicked(charity)}>Donate</button>
                                         </td>
-                                        <td className="charity-table-data"><p>{charity.description}</p></td>
+                                        <td className="charity-table-data"><p>{charity.justGivingCharity.description}</p></td>
                                     </tr>
                                 ))
                             }

@@ -1,13 +1,14 @@
 ﻿import Charity from "./charity";
+import JustGivingCharity from "./justgiving-charity";
 
 class CharityService {
     
     async getCharityIds(): Promise<Charity[]> {
-        const result = await fetch(`${process.env.REACT_APP_API_URL}v1/Charity/`);
+        const result = await fetch(`${process.env.REACT_APP_API_URL}v1/Charity?sortBy=donationCount&sortOrder=desc`);
         return await result.json();
     }
     
-    async getCharityDetails(id: number): Promise<Charity> {
+    async getCharityDetails(id: number): Promise<JustGivingCharity> {
         const requestOptions = {
             method: 'GET',
             headers: { 'Accept': 'application/json' }

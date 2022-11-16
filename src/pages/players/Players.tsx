@@ -97,8 +97,8 @@ export default class Players extends React.Component<{}, { players: Player[], lo
         })
     }
     
-    onInactivityModalContinuePressed = () => {
-        this.setState({
+    onInactivityModalContinuePressed = async () => {
+        await this.setState({
             currentRateLimit : 0,
             showInactivityModal: false
         })

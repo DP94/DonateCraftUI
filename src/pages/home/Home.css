@@ -2,3 +2,40 @@
     font-family: Minecraftia;
     font-size: 64px;
 }
+
+.leaderboards {
+    display: flex;
+    vertical-align: middle;
+    width: 70%;
+    margin: 0 auto;
+}
+
+.leaderboards img {
+    height: 50px;
+    width: 50px;
+}
+
+.death-leaderboard-container {
+    width: 50%;
+    height: 50%;
+    padding: 5%;
+}
+
+.top-charity-leaderboard-container {
+    width: 50%;
+    height: 50%;
+    padding: 5%;
+}
+
+.death-leaderboard-table {
+    width: 100%;
+}
+
+.death-leaderboard-table tr, .charity-leaderboard-table tr {
+    height: 67px;
+}
+
+.most-deaths {
+    font-size: 32px;
+    text-align: center;
+}
