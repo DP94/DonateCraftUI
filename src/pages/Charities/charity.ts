@@ -1,16 +1,15 @@
-﻿class Charity {
+﻿import JustGivingCharity from "./justgiving-charity";
+
+class Charity {
     
     id: number;
-    name: string;
-    description: string;
-    logoAbsoluteUrl: string;
+    donationCount: number;
+    justGivingCharity: JustGivingCharity;
 
-
-    constructor(id: number, name: string, description: string, logoAbsoluteUrl: string) {
+    constructor(id: number, donationCount: number, justGivingCharity: JustGivingCharity) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.logoAbsoluteUrl = logoAbsoluteUrl;
+        this.donationCount = donationCount;
+        this.justGivingCharity = justGivingCharity;
     }
 }
 

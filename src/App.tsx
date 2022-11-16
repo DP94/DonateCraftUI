@@ -67,6 +67,7 @@ function showSuccessToast() {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
+        pauseOnFocusLoss: false,
         theme: "colored",
     });
 }
@@ -80,6 +81,7 @@ function showErrorToast(message: string) {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
+        pauseOnFocusLoss: false,
         theme: "colored",
     });
 }
