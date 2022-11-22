@@ -27,6 +27,10 @@
     padding: 5%;
 }
 
+.charity-table-data-donations {
+    text-align: center;
+}
+
 .death-leaderboard-table {
     width: 100%;
 }
