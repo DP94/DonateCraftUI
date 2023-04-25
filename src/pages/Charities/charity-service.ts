@@ -1,5 +1,6 @@
 ﻿import Charity from "./charity";
 import JustGivingCharity from "./justgiving-charity";
+import JustGivingFundRaiser from "./justgiving-fundraiser";
 
 class CharityService {
     
@@ -8,13 +9,21 @@ class CharityService {
         return await result.json();
     }
     
-    async getCharityDetails(id: number): Promise<JustGivingCharity> {
+    async getCharityDetails(charity: Charity): Promise<JustGivingCharity> {
         const requestOptions = {
             method: 'GET',
             headers: { 'Accept': 'application/json' }
         }
-        const result = await fetch(`${process.env.REACT_APP_JG_API_URL}${process.env.REACT_APP_JG_API_KEY}/v1/charity/${id}`, requestOptions)
-        return await result.json();
+        
+        let result;
+        if (!charity.isFundRaiser) {
+            result = await fetch(`${process.env.REACT_APP_JG_API_URL}${process.env.REACT_APP_JG_API_KEY}/v1/charity/${charity.id}`, requestOptions)
+            return await result.json();
+        } else {
+            const fundRaiserResult = await fetch(`${process.env.REACT_APP_JG_API_URL}${process.env.REACT_APP_JG_API_KEY}/v1/fundraising/pagebyid/${charity.id}`, requestOptions);
+            const fundRaiser: JustGivingFundRaiser = await fundRaiserResult.json();
+            return new JustGivingCharity(fundRaiser.eventName, fundRaiser.pageSummary, fundRaiser.image.absoluteUrl);
+        }
     }
 }
 export default CharityService;
