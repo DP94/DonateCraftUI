@@ -8,7 +8,7 @@ import PlayerSelector from "../../modals/PlayerSelector";
 import {Player} from "../players/player";
 import {toast} from "react-toastify";
 
-class Charities extends React.Component<{}, {charities: Charity[], players: Player[], charityId: number, loading: boolean, showPlayerSelector: boolean}> {
+class Charities extends React.Component<{}, {charities: Charity[], players: Player[], charity: Charity | undefined, loading: boolean, showPlayerSelector: boolean}> {
     
     charityService = new CharityService();
     playerService = new PlayersService();
@@ -22,7 +22,7 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
             players: [],
             loading: false,
             showPlayerSelector: false,
-            charityId: 0
+            charity: undefined
         }
         const params = new URLSearchParams(window.location.search);
         this.playerId = params.get('playerId') ?? '';
@@ -37,7 +37,7 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
         for (let i = 0; i < charities.length; i++) {
             const charity = charities[i];
             try {
-                charity.justGivingCharity = await this.charityService.getCharityDetails(charity.id);
+                charity.justGivingCharity = await this.charityService.getCharityDetails(charity);
                 this.setState( {
                     charities : [...this.state.charities, charity]
                 });
@@ -62,12 +62,19 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
                 players: players,
                 showPlayerSelector: true,
                 loading: false,
-                charityId: charity.id
+                charity: charity
             })
             return;
         }
         
-        let url = `${process.env.REACT_APP_JG_DONATE_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${this.playerId}`;
+        let url;
+        if (charity.isFundRaiser) {
+            url = `${process.env.REACT_APP_JG_DONATE_FUNDRAISER_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${this.playerId}`;
+        } else {
+            url = `${process.env.REACT_APP_JG_DONATE_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${this.playerId}`;
+        }
+        
+        
         if (this.donorId && this.donorId !== '') {
             url += `~${this.donorId}`;
         }
@@ -92,7 +99,12 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
             });
             return;
         }
-        let url = `${process.env.REACT_APP_JG_DONATE_URL}${this.state.charityId}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${selectedPlayer.id}`;
+        let url;
+        if (this.state.charity?.isFundRaiser) {
+            url = `${process.env.REACT_APP_JG_DONATE_FUNDRAISER_URL}${this.state.charity?.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${selectedPlayer.id}`;    
+        } else {
+            url = `${process.env.REACT_APP_JG_DONATE_URL}${this.state.charity?.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${selectedPlayer.id}`;
+        }
         window.location.replace(url);
     }
 
@@ -103,7 +115,7 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
     }
 
     render() {
-        if (this.state && this.state.charities && this.state.charities.length !== 0 && !this.state.loading){
+        if (this.state && this.state.charities && this.state.charities.length !== 0 && !this.state.loading) {
             return (
                 <div>
                     <PlayerSelector players={this.state.players} currentPlayer='' show={this.state.showPlayerSelector} toggle={this.toggleModal} playerSelected={this.onModalPlayerSelected}/>
