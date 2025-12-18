@@ -17,7 +17,7 @@ const PlayerSelector = (props: any) => {
 
                             <li key={player.id} className="player-record w-100" data-testid={`playerChoice${index}`}
                                 onClick={() => props.playerSelected(props.currentPlayer, player)}>
-                                <img className="player-choice-image col-sm-1" src={`https://crafatar.com/avatars/${player.id}`} data-testid={`playerChoiceImage${index}`}/>
+                                <img className="player-choice-image col-sm-1" src={`https://crafthead.net/avatar/${player.id}`} data-testid={`playerChoiceImage${index}`}/>
                                 <span className="player-choice-span col-sm-2" data-testid={`playerChoiceName${index}`}>{player.name}</span>
                             </li>
 

@@ -131,7 +131,7 @@ export default class Players extends React.Component<{}, { players: Player[], lo
                                 <tr className="players-row" key={player.id}>
                                     <td className="players-table-data-image">
                                         <div className="player-info-container">
-                                            <img className="players-image" data-testid="playerImage" src={`https://crafatar.com/avatars/${player.id}` } />
+                                            <img className="players-image" data-testid="playerImage" src={`https://crafthead.net/avatar/${player.id}` } />
                                             <span data-testid="playerName" className="player-name">{player.name}</span>
                                         </div>
                                     </td>
