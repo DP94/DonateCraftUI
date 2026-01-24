@@ -40,6 +40,14 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
     }
     
     async getRevivals() {
+        if (this.state.currentRateLimit >= this.rateLimit) {
+            this.setState({
+                showInactivityModal: true,
+                showPlayerSelector: false,
+                loading: false,
+            })
+            return;
+        }
         const revivals = await this.revivalService.getRevivals();
         this.setState({
             revivals: revivals,
