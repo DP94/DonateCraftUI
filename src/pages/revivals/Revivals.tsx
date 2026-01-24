@@ -1,5 +1,4 @@
 import React from "react";
-import {Player} from "../players/player";
 import RevivalService from "./revival-service";
 import {Revival} from "./revival";
 import LoadingSpinner from "../../loader/LoadingSpinner";
@@ -68,6 +67,18 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
         })
         this.getRevivals();
     }
+    
+    getProgessForRevival = (status: RevivalStatus) => {
+        switch (status) {
+            case RevivalStatus.Created:
+                return 0;
+            case RevivalStatus.Processing:
+                    return 0.5;
+            case RevivalStatus.Unlocked:
+            case RevivalStatus.Error:
+                return 1;
+        }
+    }
 
 
     render() {
@@ -77,15 +88,30 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
             return (
                 <div>
                     <InactivityModal show={this.state.showInactivityModal} toggle={this.toggleInactivityModal} continueButtonOnClick={this.onInactivityModalContinuePressed}/>
-                    {
-                        this.state.revivals.map(revival => (
-                            <div key={revival.id}>
-                                <h1>{revival.id}</h1>
-                                <h1>{RevivalStatus[revival.status]}</h1>
-                            </div>
+                      
+                            <div>
+                                <table className="players-table table-striped table table-hover table-responsive table-bordered">
+                                    <thead className="table-light">
+                                    <tr>
+                                        <th>Revival</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        this.state.revivals.map(revival => (
+                                            <tr className="players-row" key={revival.id}>
+                                                <td className="players-table-data">{revival.id}</td>
+                                                <td className="players-table-data">{RevivalStatus[revival.status]}</td>
+                                                <td><progress value={this.getProgessForRevival(revival.status)} /></td>
+                                            </tr>
+                                        ))
+                                    }
+                                    </tbody>
+                                </table>
 
-                            ))
-                    }
+                            </div>
                 </div>
             )
         }
