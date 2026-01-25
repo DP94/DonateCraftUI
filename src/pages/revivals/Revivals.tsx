@@ -4,6 +4,7 @@ import {Revival} from "./revival";
 import LoadingSpinner from "../../loader/LoadingSpinner";
 import InactivityModal from "../../modals/InactivityModal";
 import {RevivalStatus} from "./revival-status";
+import {ProgressBar} from "react-bootstrap";
 
 class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolean, showPlayerSelector: boolean, showInactivityModal: boolean, currentRateLimit: number}> {
 
@@ -61,17 +62,17 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
     }
 
     onInactivityModalContinuePressed = async () => {
-        await this.setState({
-            currentRateLimit : 0,
+        this.setState({
+            currentRateLimit: 0,
             showInactivityModal: false
         })
-        this.getRevivals();
+        await this.getRevivals();
     }
     
-    getProgessForRevival = (status: RevivalStatus) => {
+    getProgressForRevival = (status: RevivalStatus) => {
         switch (status) {
             case RevivalStatus.Created:
-                return 0;
+                return 0.25;
             case RevivalStatus.Processing:
                     return 0.5;
             case RevivalStatus.Unlocked:
@@ -80,6 +81,28 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
         }
     }
 
+    getBackgroundForRevival = (status: RevivalStatus) => {
+        switch (status) {
+            case RevivalStatus.Created:
+            case RevivalStatus.Processing:
+                return 'info';
+            case RevivalStatus.Unlocked:
+                return 'success';
+            case RevivalStatus.Error:
+                return 'danger';
+        }
+    }
+
+    getAnimatedForRevival = (status: RevivalStatus) => {
+        switch (status) {
+            case RevivalStatus.Created:
+            case RevivalStatus.Processing:
+                return true;
+            case RevivalStatus.Unlocked:
+            case RevivalStatus.Error:
+                return false;
+        }
+    }
 
     render() {
         if (this.state.loading) {
@@ -88,7 +111,6 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
             return (
                 <div>
                     <InactivityModal show={this.state.showInactivityModal} toggle={this.toggleInactivityModal} continueButtonOnClick={this.onInactivityModalContinuePressed}/>
-                      
                             <div>
                                 <table className="players-table table-striped table table-hover table-responsive table-bordered">
                                     <thead className="table-light">
@@ -102,9 +124,19 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
                                     {
                                         this.state.revivals.map(revival => (
                                             <tr className="players-row" key={revival.id}>
-                                                <td className="players-table-data">{revival.id}</td>
+                                                <td className="players-table-data">
+                                                    <div className="player-info-container">
+                                                        <img className="players-image" data-testid="playerImage"
+                                                             src={`https://crafthead.net/avatar/${revival.id}`}/>
+                                                        <span data-testid="playerName"
+                                                              className="player-name">{revival.name}</span>
+                                                    </div>
+                                                </td>
                                                 <td className="players-table-data">{RevivalStatus[revival.status]}</td>
-                                                <td><progress value={this.getProgessForRevival(revival.status)} /></td>
+                                                <td className="players-table-data"><ProgressBar
+                                                    variant={this.getBackgroundForRevival(revival.status)}
+                                                    animated={this.getAnimatedForRevival(revival.status)}
+                                                    now={this.getProgressForRevival(revival.status)} max={1}/></td>
                                             </tr>
                                         ))
                                     }
