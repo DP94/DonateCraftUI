@@ -56,7 +56,7 @@ class Home extends React.Component<{}, {players: Player[], charities: Charity[],
         for (let i = 0; i < charities.length; i++) {
             const charity = charities[i];
             try {
-                charity.justGivingCharity = await this.charityService.getCharityDetails(charity.id);
+                charity.justGivingCharity = await this.charityService.getCharityDetails(charity);
             } catch (e) {
                 //Some charities can not be found
                 console.log(e);
