@@ -19,7 +19,7 @@ describe("Players page", function (){
             render(<Players />);
         });        
         expect(screen.getByTestId("playersTable")).toBeInTheDocument();
-        expect(screen.getByTestId("playerImage")).toHaveAttribute("src", `https://crafatar.com/avatars/${playerId}`);
+        expect(screen.getByTestId("playerImage")).toHaveAttribute("src", `https://crafthead.net/avatar/${playerId}`);
         expect(screen.getByTestId("playerName")).toHaveTextContent("TestPlayer");
         expect(screen.getByTestId("playerDeathReason")).toHaveTextContent("Died from Testing");
         expect(screen.getByTestId("playerDeathCount")).toHaveTextContent("1");
@@ -79,7 +79,7 @@ describe("Players page", function (){
         const playerChoiceName = screen.getByTestId('playerChoiceName0')
 
         expect(modalHeader).toHaveTextContent('Who is donating?');
-        expect(playerChoiceImage).toHaveAttribute("src",`https://crafatar.com/avatars/${playerId}`)
+        expect(playerChoiceImage).toHaveAttribute("src",`https://crafthead.net/avatar/${playerId}`)
         expect(playerChoiceName).toHaveTextContent(`${playerMockData[0].name}`)
     });
 });
