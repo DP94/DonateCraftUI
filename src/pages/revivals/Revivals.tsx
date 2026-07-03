@@ -116,8 +116,8 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
                                     <thead className="table-light">
                                     <tr>
                                         <th>Revival</th>
+                                        <th style={{minWidth: '150px'}}>Progress</th>
                                         <th>Status</th>
-                                        <th>Progress</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -132,11 +132,11 @@ class Revivals extends React.Component<{}, {revivals: Revival[], loading: boolea
                                                               className="player-name">{revival.name}</span>
                                                     </div>
                                                 </td>
-                                                <td className="players-table-data">{RevivalStatus[revival.status]}</td>
                                                 <td className="players-table-data"><ProgressBar
                                                     variant={this.getBackgroundForRevival(revival.status)}
                                                     animated={this.getAnimatedForRevival(revival.status)}
                                                     now={this.getProgressForRevival(revival.status)} max={1}/></td>
+                                                <td className="players-table-data">{RevivalStatus[revival.status]}</td>
                                             </tr>
                                         ))
                                     }
