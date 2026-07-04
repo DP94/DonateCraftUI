@@ -1,133 +1,84 @@
-﻿import React from "react";
+import React, { useCallback, useState } from "react";
 import './Home.css'
 import PlayersService from "../players/players-service";
-import {Player} from "../players/player";
+import { Player } from "../players/player";
 import PlayerTableRecord from "../../table/PlayerTableRecord";
 import CharityService from "../Charities/charity-service";
 import Charity from "../Charities/charity";
 import LoadingSpinner from "../../loader/LoadingSpinner";
 import InactivityModal from "../../modals/InactivityModal";
+import { useInactivityPoller } from "../../hooks/useInactivityPoller";
 
-class Home extends React.Component<{}, {players: Player[], charities: Charity[], loading: boolean, showInactivityModal: boolean, requestSent: number}> {
+const playerService = new PlayersService();
+const charityService = new CharityService();
 
-    playerService = new PlayersService();
-    charityService = new CharityService();
+function Home() {
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [charities, setCharities] = useState<Charity[]>([]);
 
-    timer: number = 0;
-    //5 minutes
-    rateLimit: number = 30;
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            charities: [],
-            players: [],
-            loading: false,
-            showInactivityModal: false,
-            requestSent: 0
-        }
-    }
-
-    async componentDidMount() {
-        await this.setState({
-            loading: true,
-        });
-        await this.getTableData();
-        await this.setState({
-            loading: false,
-        });
-        this.timer = window.setInterval(() => this.getTableData(), 10000);
-    }
-
-    componentWillUnmount() {
-        window.clearInterval(this.timer);
-    }
-
-    async getTableData() {
-        if (this.state?.requestSent >= this.rateLimit) {
-            this.setState({
-                showInactivityModal: true,
-                loading: false,
-            })
-            return;
-        }
-        const players = await this.playerService.getPlayers();
-        const charities: Charity[] = await this.charityService.getCharityIds();
-        for (let i = 0; i < charities.length; i++) {
-            const charity = charities[i];
+    const fetchTableData = useCallback(async () => {
+        const nextPlayers = await playerService.getPlayers();
+        const nextCharities: Charity[] = await charityService.getCharityIds();
+        for (const charity of nextCharities) {
             try {
-                charity.justGivingCharity = await this.charityService.getCharityDetails(charity.id);
+                charity.justGivingCharity = await charityService.getCharityDetails(charity.id);
             } catch (e) {
                 //Some charities can not be found
                 console.log(e);
             }
         }
-        await this.setState({
-            players: players,
-            charities: charities,
-            requestSent: this.state?.requestSent + 1
-        });
-    }
+        setPlayers(nextPlayers);
+        setCharities(nextCharities);
+    }, []);
 
-    toggleInactivityModal = () => {
-        this.setState({
-            showInactivityModal: !this.state.showInactivityModal
-        })
-    }
-    
-    onInactivityModalContinuePressed = async () => {
-        await this.setState({
-            requestSent : 0,
-            showInactivityModal: false
-        })
-        this.getTableData();
-    }
+    const {
+        initialLoading,
+        showInactivityModal,
+        toggleInactivityModal,
+        onInactivityContinue,
+    } = useInactivityPoller(fetchTableData, { intervalMs: 10000, maxTicks: 30 });
 
-    render() {
-        if (this.state?.loading) {
-            return <LoadingSpinner/>
-        } else {
-            return (
-                <div>
-                    <InactivityModal show={this.state?.showInactivityModal} toggle={this.toggleInactivityModal} continueButtonOnClick={this.onInactivityModalContinuePressed}/>
-                    <h1 className="title">DonateCraft</h1>
-                    <div className="leaderboards">
-                        <div className="death-leaderboard-container">
-                            <p className="most-deaths">Most deaths</p>
-                            <table
-                                className="death-leaderboard-table table-striped table table-hover table-responsive table-bordered">
-                                <tbody>
-                                {
-                                    this.state?.players?.map((player) => (
-                                        <PlayerTableRecord player={player}/>
-                                    ))
-                                }
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="top-charity-leaderboard-container">
-                            <p className="most-deaths">Charity donation count</p>
-                            <table
-                                className="charity-leaderboard-table table-striped table table-hover table-responsive table-bordered">
-                                <tbody>
-                                {
-                                    this.state?.charities?.map((charity) => (
-                                        <tr key={charity.id}>
-                                            <td className="charity-table-data">
-                                                <span>{charity.justGivingCharity.name}</span></td>
-                                            <td className="charity-table-data charity-table-data-donations">{charity.donationCount}</td>
-                                        </tr>
-                                    ))
-                                }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+    if (initialLoading) {
+        return <LoadingSpinner/>;
+    }
+    return (
+        <div>
+            <InactivityModal show={showInactivityModal} toggle={toggleInactivityModal} continueButtonOnClick={onInactivityContinue}/>
+            <h1 className="title">DonateCraft</h1>
+            <div className="leaderboards">
+                <div className="death-leaderboard-container">
+                    <p className="most-deaths">Most deaths</p>
+                    <table
+                        className="death-leaderboard-table table-striped table table-hover table-responsive table-bordered">
+                        <tbody>
+                        {
+                            players.map((player) => (
+                                <PlayerTableRecord player={player}/>
+                            ))
+                        }
+                        </tbody>
+                    </table>
                 </div>
-
-            )
-        }
-    }
+                <div className="top-charity-leaderboard-container">
+                    <p className="most-deaths">Charity donation count</p>
+                    <table
+                        className="charity-leaderboard-table table-striped table table-hover table-responsive table-bordered">
+                        <tbody>
+                        {
+                            charities.map((charity) => (
+                                <tr key={charity.id}>
+                                    <td className="charity-table-data">
+                                        <span>{charity.justGivingCharity.name}</span></td>
+                                    <td className="charity-table-data charity-table-data-donations">{charity.donationCount}</td>
+                                </tr>
+                            ))
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default Home;
