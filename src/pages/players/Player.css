@@ -7,8 +7,7 @@
 }
 
 .players-row {
-    padding: 10%;
-    font-size: 64px;
+    font-size: 16px;
 }
 
 .players-table-data, .players-table-data-image {
@@ -47,10 +46,11 @@
 }
 
 .death-reason, .player-name {
-    font-size: 32px;
+    font-size: 16px;
 }
 
 .player-info-container {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
