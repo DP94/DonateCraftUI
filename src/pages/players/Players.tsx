@@ -36,14 +36,28 @@ export default function Players() {
         resetActivity,
     } = useInactivityPoller(fetchPlayers, { intervalMs: 10000, maxTicks: 30 });
 
+    const [buyCreditsMode, setBuyCreditsMode] = useState(false);
+
     const onPlayerDonateClicked = (player: Player) => {
+        setBuyCreditsMode(false);
         setShowPlayerSelector(true);
         setCurrentPlayer(player);
         resetActivity();
     };
 
+    const onBuyRevivalsClicked = () => {
+        setBuyCreditsMode(true);
+        setShowPlayerSelector(true);
+        setCurrentPlayer(null);
+        resetActivity();
+    };
+
     const onModalPlayerSelected = (player: Player, donor: Player) => {
         setShowPlayerSelector(false);
+        if (buyCreditsMode) {
+            window.location.replace(`/charities?playerId=${donor.id}&mode=credits`);
+            return;
+        }
         let url = `/charities?playerId=${player.id}`;
         if (player.id !== donor.id) {
             url += `&donorId=${donor.id}`;
@@ -63,6 +77,9 @@ export default function Players() {
         <div>
             <InactivityModal show={showInactivityModal} toggle={toggleInactivityModal} continueButtonOnClick={onInactivityContinue}/>
             <PlayerSelector players={players} currentPlayer={currentPlayer} show={showPlayerSelector && !showInactivityModal} toggle={toggleModal} playerSelected={onModalPlayerSelected}/>
+            <div className="players-actions">
+                <button className="btn btn-success buy-revivals-button" data-testid="buyRevivalsButton" onClick={onBuyRevivalsClicked}>Buy Revivals</button>
+            </div>
             <table className="players-table table-striped table table-hover table-responsive table-bordered" data-testid="playersTable">
                 <thead className="table-light">
                     <tr>
@@ -71,6 +88,7 @@ export default function Players() {
                         <th>Status</th>
                         <th>Death Count</th>
                         <th>Dontation Total</th>
+                        <th>Revival Credits</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,6 +115,9 @@ export default function Players() {
                             </td>
                             <td className="players-table-data" data-testid="playerDeathCount">{player.deaths.length}</td>
                             <td className="players-table-data" data-testid="playerDonationSum">£{getDonationTotal(player.donations)}</td>
+                            <td className="players-table-data player-credits" data-testid="playerCredits">
+                                <span className={(player.credits ?? 0) > 0 ? "credits-active" : "credits-empty"}>{player.credits ?? 0} / 5</span>
+                            </td>
                         </tr>
                     ))
                 }

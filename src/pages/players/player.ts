@@ -3,15 +3,17 @@ import {Donation} from "./donation";
 
 export class Player {
     id : string;
-    name : string; 
+    name : string;
     isDead : boolean;
+    credits: number;
     deaths: Death[];
     donations: Donation[]
-    
-    constructor(id: string, name: string, isDead:boolean, deaths: Death[], donations: Donation[]) {
+
+    constructor(id: string, name: string, isDead:boolean, credits: number, deaths: Death[], donations: Donation[]) {
         this.id = id;
         this.name = name;
         this.isDead = isDead;
+        this.credits = credits;
         this.deaths = deaths;
         this.donations = donations;
     }

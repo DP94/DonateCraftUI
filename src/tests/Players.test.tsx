@@ -61,6 +61,51 @@ describe("Players page", function (){
         expect(screen.getByTestId("noPlayers")).toHaveTextContent("No players ☹");
     });
     
+    it('shows credit balance for alive player with credits', async () => {
+        const playerId = "test-credits";
+        const playerMockData = getAlivePlayerWithCredits(playerId, 3);
+        await act(() => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    json: () => Promise.resolve(playerMockData),
+                }),
+            ) as jest.Mock;
+            render(<Players />);
+        });
+        expect(screen.getByTestId("playerCredits")).toHaveTextContent("3 / 5");
+    });
+
+    it('renders Buy Revivals button', async () => {
+        const playerId = "test-credits";
+        const playerMockData = getAlivePlayerWithCredits(playerId, 0);
+        await act(() => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    json: () => Promise.resolve(playerMockData),
+                }),
+            ) as jest.Mock;
+            render(<Players />);
+        });
+        const button = screen.getByTestId("buyRevivalsButton");
+        expect(button).toHaveTextContent("Buy Revivals");
+        expect(button).toHaveClass("btn", "btn-success");
+    });
+
+    it('opens player selector when Buy Revivals clicked', async () => {
+        const playerId = "test-credits";
+        const playerMockData = getAlivePlayerWithCredits(playerId, 0);
+        await act(async () => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    json: () => Promise.resolve(playerMockData),
+                }),
+            ) as jest.Mock;
+            render(<Players />);
+        });
+        fireEvent.click(screen.getByTestId("buyRevivalsButton"));
+        expect(screen.getByTestId("playerSelectorHeader")).toHaveTextContent("Who is donating?");
+    });
+
     it('displays player selector when donate button clicked', async () => {
         const playerId = "3a0c7a69-c12f-4f7f-9aaf-3345bb0f2e38";
         const playerMockData = getDeadPlayer(playerId);
@@ -84,15 +129,21 @@ describe("Players page", function (){
     });
 });
 
-function getDeadPlayer(playerId: string) : Player[] {    
+function getDeadPlayer(playerId: string) : Player[] {
     return [
-        new Player(playerId, "TestPlayer", true, getMockDeaths(playerId), getMockDonations(playerId) )
+        new Player(playerId, "TestPlayer", true, 0, getMockDeaths(playerId), getMockDonations(playerId) )
     ];
 }
 
 function getAlivePlayerWithNoDonations(playerId: string): Player[] {
     return [
-        new Player(playerId, "TestPlayer", false, [], [])
+        new Player(playerId, "TestPlayer", false, 0, [], [])
+    ];
+}
+
+function getAlivePlayerWithCredits(playerId: string, credits: number): Player[] {
+    return [
+        new Player(playerId, "TestPlayer", false, credits, [], [])
     ];
 }
 

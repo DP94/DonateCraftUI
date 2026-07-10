@@ -14,7 +14,8 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
     playerService = new PlayersService();
     playerId = '';
     donorId = '';
-    
+    mode = '';
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -27,6 +28,16 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
         const params = new URLSearchParams(window.location.search);
         this.playerId = params.get('playerId') ?? '';
         this.donorId = params.get('donorId') ?? '';
+        this.mode = params.get('mode') ?? '';
+    }
+
+    private buildDonationUrl(charityId: number, playerId: string, donorId?: string): string {
+        const prefix = this.mode === 'credits' ? 'credits~JUSTGIVING-DONATION-ID' : 'JUSTGIVING-DONATION-ID';
+        let url = `${process.env.REACT_APP_JG_DONATE_URL}${charityId}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=${prefix}~${playerId}`;
+        if (this.mode !== 'credits' && donorId && donorId !== '') {
+            url += `~${donorId}`;
+        }
+        return url;
     }
     
     async componentDidMount() {
@@ -52,7 +63,7 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
     }
 
     async charityDonateButtonClicked(charity: Charity) {
-        
+
         if (!this.playerId) {
             await this.setState({
                 loading: true
@@ -66,19 +77,15 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
             })
             return;
         }
-        
-        let url = `${process.env.REACT_APP_JG_DONATE_URL}${charity.id}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${this.playerId}`;
-        if (this.donorId && this.donorId !== '') {
-            url += `~${this.donorId}`;
-        }
-        window.location.replace(url);
+
+        window.location.replace(this.buildDonationUrl(charity.id, this.playerId, this.donorId));
     }
 
     onModalPlayerSelected = (currentPlayer: Player, selectedPlayer: Player) => {
         this.setState({
             showPlayerSelector: false
         })
-        if (!selectedPlayer.isDead) {
+        if (this.mode !== 'credits' && !selectedPlayer.isDead) {
             toast.error(`Cannot donate for ${selectedPlayer.name} as they are not dead. If they have recently died, please refresh this page.`, {
                 position: "top-center",
                 autoClose: 10000,
@@ -92,8 +99,7 @@ class Charities extends React.Component<{}, {charities: Charity[], players: Play
             });
             return;
         }
-        let url = `${process.env.REACT_APP_JG_DONATE_URL}${this.state.charityId}?exiturl=${process.env.REACT_APP_API_URL}v1/Callback?data=JUSTGIVING-DONATION-ID~${selectedPlayer.id}`;
-        window.location.replace(url);
+        window.location.replace(this.buildDonationUrl(this.state.charityId, selectedPlayer.id));
     }
 
     toggleModal = () => {
